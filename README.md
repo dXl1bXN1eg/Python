@@ -1,2 +1,1 @@
-# -leri-Programlama
-Derslerde verilen ödevlerim.
+# İleri Programlama
