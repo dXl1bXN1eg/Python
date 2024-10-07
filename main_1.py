@@ -38,6 +38,23 @@ s1 = 'E'
 
 
 
+if true:
+  pass
+elif false:
+  pass
+else:
+  pass
+
+
+print("Hello World")
+ss = input("=> ")
+help(input)
+
+
+
+
+
+
 
 
 
