@@ -50,7 +50,7 @@ print("Hello World")
 
 try:
   ss = int(input("Yaşınız: "))
-catch BaseException:
+except BaseException:
   pass
 
 help('input')
