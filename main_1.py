@@ -47,11 +47,16 @@ else:
 
 
 print("Hello World")
-ss = input("=> ")
+
+try:
+  ss = int(input("Yaşınız: "))
+catch BaseException:
+  pass
+
 help('input')
 
 
->>> print(""" hello world "1" and '2' """)
+print(""" hello world "1" and '2' """)
 
 
 
