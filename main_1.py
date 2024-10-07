@@ -48,7 +48,7 @@ else:
 
 print("Hello World")
 ss = input("=> ")
-help(input)
+help('input')
 
 
 
