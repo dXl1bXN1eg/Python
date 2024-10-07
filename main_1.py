@@ -51,6 +51,7 @@ ss = input("=> ")
 help('input')
 
 
+>>> print(""" hello world "1" and '2' """)
 
 
 
