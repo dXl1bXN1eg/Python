@@ -1,6 +1,6 @@
 '''  Değişkenler '''
 sayi = 3
-ad = "Cemal"
+ad = "jbkj"
 k = true
 s1 = 'E'
 
