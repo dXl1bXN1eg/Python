@@ -1,70 +1,32 @@
-# Matematik formülü
-
 import math
 
-#s = math.pow() küp alma
-#d = math.ceil(3)
-#f = math.sin(2)
-#g = math.cos(3)
-#h = math.tan(3)
-#j = math.pi(2)
-#f = math.factorial(5)
-#f = math.sqrt(5) kök alma
-#print(f)
 
-"""
-toplam = 0
+# 1. soru
+"""a = int(input("a giriniz: "))
+b = int(input("b giriniz: "))
+total = (math.pow(a,2) + math.pow(b,2))
+sonuc = math.pi * math.sqrt(total)
+print(sonuc)"""
+
+# 2. soru
+"""kök = 0
 for i in range(1,11):
-    a = i
-    b = math.factorial(i)
-    toplam  = toplam + (a/b)
+    kök += math.sqrt(i) * i
 
-#print(int(toplam))
-"""
+print(kök)"""
 
-"""
-total = 0
-for i in range(1,51):
-    total = total + math.sqrt(i)
-
-print(total)
-"""
-
-"""
-x = int(input("sayi gir= "))
-sonuc =  0
-if x < 5:
-    sonuc = -2*x + 3
-else:
-    sonuc = math.pow(x,3)*math.pi
-
-print(sonuc)
-"""
-
-"""
-alfa = int(input("Alfa değeri giriniz: "))
-beta = int(input("Beta değeri giriniz: "))
-total = alfa + beta
-cikarim = alfa - beta
-sonuc = 2*math.sin((total / 2))*math.cos(cikarim/2)
-print(sonuc)
-"""
-
-"""
-a = 3
-b = 4
-a = math.pow(a,2)
-b = math.pow(b,2)
-total = a + b
-s = math.pi * math.sqrt(total)
-print(s)
-"""
-
+# 3. Soru
 """x = 5
-y = 9
+sonuc = 0
+if (x >= 1 or x <= 10):
+    for i in range(1, x + 1):
+        sonuc += (math.pow(i,i) / math.factorial(i))
 
-f = (math.pi * x) / 2
-t = math.sqrt(x + math.pow(y,3)) / math.sin(y)
-toplam = f + t
-print(toplam)
-"""
+print(sonuc)"""
+
+# 4. Soru
+"""toplam = 0
+for i in range(1,11):
+    toplam += (i / math.sqrt(i))
+
+print(toplam)"""
