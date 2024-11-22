@@ -4,7 +4,7 @@
 def user_control():
     user_counts = {}  
 
-    with open('data_folder/new_data.txt', 'r', encoding='utf-8') as control:
+    with open('data.txt', 'r', encoding='utf-8') as control:
         for line in control:
             username = ' '.join(line.strip().split())  
             username = username.split(" -- ")[0]  
@@ -23,7 +23,7 @@ def user_control():
 # 
 def uniq_user():
     unique_users = set()
-    with open('data_folder/user.txt', 'r', encoding='utf-8') as control:
+    with open('user.txt', 'r', encoding='utf-8') as control:
         for line in control:
             user = line.strip()  
             unique_users.add(user)
