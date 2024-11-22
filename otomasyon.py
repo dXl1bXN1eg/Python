@@ -1,5 +1,4 @@
 import os
-import re
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
@@ -7,148 +6,84 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from webdriver_manager.chrome import ChromeDriverManager
+import time
 
-with open('data_folder/bilgiler.txt', 'w', encoding='utf-8') as file:
-    chrome_options = Options()
-    driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
+output_folder = "/home/x/Desktop/Yapay Zeka/Messages"  
 
+with open('link.txt', 'r', encoding='utf-8') as control:
+    link_info = [line.strip() for line in control]  
+    links = [url.split(' - ')[0] for url in link_info]  
+    usernames = [url.split(' - ')[1] for url in link_info] 
+
+def save_message_to_file(author, message, folder_path):
     try:
-        driver.get('https://www.sacekimisonuclari.com')
+        user_file_path = os.path.join(folder_path, f"{author}_messages.txt")
+        with open(user_file_path, 'a', encoding='utf-8') as f:
+            f.write(message + "\n")
+        print(f"Message saved for user: {author}")
+    except Exception as e:
+        print(f"Error saving message for user {author}: {e}")
 
-        # Diğer sayfalara geçiş
-        for page in range(34, 50):
-            page_number = page * 50
-            page_link = f"https://www.sacekimisonuclari.com/index.php?board=2.{page_number}"
+chrome_options = Options()
+chrome_options.add_argument("--headless")  
+driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
 
-            print(f"Sayfa: {page} - URL: {page_link}")
-            driver.get(page_link)
+for url, username in zip(links, usernames):
+    try:
+        link_folder = os.path.join(output_folder, url.split('/')[-1])  
+        if not os.path.exists(link_folder):
+            os.makedirs(link_folder)
+        
+        driver.get(url)
+        print(url)
 
-            rows = WebDriverWait(driver, 10).until(
-                EC.presence_of_all_elements_located((By.XPATH, '//table/tbody/tr'))
-            )
+        WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.XPATH, "//*[@class='windowbg']")))
+        posts = driver.find_elements(By.XPATH, "//*[@class='windowbg']")
+        
+        for post in posts:
+            try:
+                users = post.find_element(By.XPATH, ".//a[contains(@title, 'Profilini görüntüle')]").text
+                message = post.find_element(By.XPATH, ".//div[@class='post']").text
+                save_message_to_file(username, "Username: " + users + " \n " + message, link_folder)  
+            except BaseException:
+                pass
 
-            title_links = []  
+        current_url = driver.current_url
+        base_url, number = current_url.rsplit('.', 1)
+        number = int(number)
 
-            for row in rows:
-                try:
-                    # Başlık linkini al
-                    title_link = row.find_element(By.XPATH, './/span[@id]/a').get_attribute('href')
-                    title_links.append(title_link)  # Linki listeye ekle
-                except BaseException:
-                    pass
+        tkq = 0
+        for i in range(1, 30): 
+            next_page_url = f"{base_url}.{number + (i * 15)}"
+            try:
+                driver.get(next_page_url)
+                print(next_page_url)
+                page_source_length = len(driver.page_source)
 
-            # Depolanan linklere sırayla git
-            for title_link in title_links:
-                try:
-                    driver.get(title_link)
-
+                WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.XPATH, "//*[@class='windowbg']")))
+                posts = driver.find_elements(By.XPATH, "//*[@class='windowbg']")
+                for post in posts:
                     try:
-                        # İçerik sayfasında mesaj alanını al
-                        message_element = WebDriverWait(driver, 10).until(
-                            EC.presence_of_element_located((By.XPATH, '//div[@class="post"]/div[@class="inner"]'))
-                        )
-                        message_text = message_element.text
-
-                    except Exception as e:
-                        print("Mesaj alanı bulunamadı, sayfa kaynakları aranacak...")
-                        # Sayfanın HTML içeriğini alın
-                        page_source = driver.page_source
-                        message_text = page_source
-
-                    #pattern1 = r'\b(2[2-4][0-9]|250)\b'
-                    #pattern2 = r'3\s*\.?\s*ay'
-
-                    # İlk kontrolü yap
-                    try:
-                        if re.search(r'\b(2[2-4][0-9]|250)\b', message_text) or re.search(r'8\s*\.\s*ay|8\s*\.\s*ay', message_text, re.IGNORECASE):
-                            element = WebDriverWait(driver, 10).until(
-                                EC.presence_of_element_located((By.XPATH, '/html/body/div/div[2]/div[2]/div/div[3]/form/div[1]/div/div[1]/h4/a'))
-                            )
-                            author = element.text
-                            title = driver.title
-
-                            file.write(f"Kullanıcı: {author}, Başlık: {title}, Link: {title_link}\n")
-                            print(f"Kullanıcı: {author}, Başlık: {title}")
+                        users = post.find_element(By.XPATH, ".//a[contains(@title, 'Profilini görüntüle')]").text
+                        message = post.find_element(By.XPATH, ".//div[@class='post']").text
+                        save_message_to_file(username, "Username: " + users + " \n " + message, link_folder)
                     except BaseException:
-                        print("\n\nKullanıcıları alamaadı Burada büyük bir sorun var hemen bakman lazım")
+                        pass
 
-                    # Pagination kontrolü
-                    current_url = driver.current_url
-                    base_url, number = current_url.rsplit('.', 1)
-                    number = int(number)
+                if page_source_length == tkq: 
+                    print("Sayfada değişiklik yok, orijinal URL'ye dönülüyor.")
+                    driver.get(current_url)  
+                    break  
+                else:
+                    tkq = page_source_length
+                    print("Sayfa içeriği güncellendi.")
 
-                    data_content = [] 
-                    previous_html_size = 0 
+            except BaseException:
+                pass
 
-                    for i in range(1, 22): 
-                        next_page_url = f"{base_url}.{number + (i * 15)}"
-                        try:
-                            driver.get(next_page_url)
-
-                            new_rows = WebDriverWait(driver, 10).until(
-                                EC.presence_of_all_elements_located((By.XPATH, '//table/tbody/tr'))
-                            )
-
-                            html_size_new = len(driver.page_source)
-                            data_content.append(html_size_new)
-
-                            if html_size_new == previous_html_size:
-                                break
-
-                            previous_html_size = html_size_new
-
-                            for new_row in new_rows:
-                                try:
-                                    new_title_link = new_row.find_element(By.XPATH, './/span[@id]/a').get_attribute('href')
-                                    driver.get(new_title_link)
-
-                                    try:
-                                        # İçerik sayfasında mesaj alanını al
-                                        message_element = WebDriverWait(driver, 10).until(
-                                            EC.presence_of_element_located((By.XPATH, '//div[@class="post"]/div[@class="inner"]'))
-                                        )
-                                        message_text = message_element.text
-
-                                    except Exception as e:
-                                        print("Mesaj alanı bulunamadı, sayfa kaynakları aranacak...")
-                                        # Sayfanın HTML içeriğini alın
-                                        page_source = driver.page_source
-                                        message_text = page_source
-
-                                    try:
-                                        if re.search(r'\b(2[2-4][0-9]|250)\b', message_text) or re.search(r'8\s*\.\s*ay|8\s*\.\s*ay', message_text, re.IGNORECASE):
-                                            element = WebDriverWait(driver, 10).until(
-                                                EC.presence_of_element_located((By.XPATH, '/html/body/div/div[2]/div[2]/div/div[3]/form/div[1]/div/div[1]/h4/a'))
-                                            )
-                                            author = element.text
-                                            title = driver.title
-
-                                            file.write(f"Kullanıcı: {author}, Başlık: {title}, Link: {new_title_link}\n")
-                                            print(f"Kullanıcı: {author}, Başlık: {title}")
-                                    except BaseException:
-                                        print("\n\nKullanıcıları alamaadı Burada büyük bir sorun var hemen bakman lazım")
-
-                                    driver.back()
-                                    WebDriverWait(driver, 10).until(
-                                        EC.presence_of_all_elements_located((By.XPATH, '//table/tbody/tr'))
-                                    )
-
-                                except BaseException:
-                                    pass
-
-                        except BaseException:
-                            break  
-
-                    driver.back()
-                    WebDriverWait(driver, 10).until(
-                        EC.presence_of_all_elements_located((By.XPATH, '//table/tbody/tr'))
-                    )
-
-                except BaseException:
-                    pass
+        print("Bu bağlantının işlenmesi tamamlandı, bir sonraki bağlantıya geçiliyor.\n")
 
     except BaseException:
         pass
 
-    finally:
-        driver.quit()
+driver.quit()
