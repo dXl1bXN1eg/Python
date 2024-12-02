@@ -1,10 +1,7 @@
 from scapy.all import *
 
-packet = IP(dst="8.8.8.8")/ICMP()
-send(packet)
-
-
-
+"""packet = IP(dst="8.8.8.8")/ICMP()
+send(packet)"""
 
 
 def packet_callback(packet):
