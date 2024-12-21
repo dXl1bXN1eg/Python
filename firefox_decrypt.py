@@ -1,4 +1,7 @@
 #!/usr/bin/env python3
+
+# python3 firefox_decrypt.py firefox_dizini
+
 from __future__ import annotations
 import argparse
 import csv
