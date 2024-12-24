@@ -14,6 +14,4 @@ while true; do
 
     # DHCP sunucusundan IP al
     dhclient $interface >/dev/null 2>&1
-
-    sleep 5
 done
